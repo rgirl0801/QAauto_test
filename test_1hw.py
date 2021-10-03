@@ -21,7 +21,7 @@ class TestAuthorizationClass:
 
     @pytest.mark.parametrize("email, password",
                              data.values(), ids=data.keys())
-    @pytest.mark.search
+    
     def test_login_negative(self, email, password):
         with Chrome() as browser:
             browser.get('https://qastand.valhalla.pw/login')  # step1
