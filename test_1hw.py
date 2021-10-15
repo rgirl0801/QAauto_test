@@ -3,7 +3,7 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 
 from functions import login, wait_for_url_to_be, wait_until_clickable
-from test_auth import data
+from auth import data
 
 
 @pytest.mark.auth
