@@ -1,7 +1,7 @@
 import pytest
 
-from QAauto_test.constants import Links, POSITIVE_LOGIN_CREDENTIALS, NEGATIVE_LOGIN_CREDENTIALS
-from QAauto_test.functions import wait_for_url_to_be, login_ui
+from constants import Links, POSITIVE_LOGIN_CREDENTIALS, NEGATIVE_LOGIN_CREDENTIALS
+from functions import wait_for_url_to_be, login_ui
 
 
 @pytest.mark.auth
