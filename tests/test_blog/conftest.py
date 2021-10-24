@@ -7,5 +7,3 @@ from QAauto_test.constants import SESSION_COOKIE
 def login(browser):
     browser.get('https://qastand.valhalla.pw/')
     browser.add_cookie(SESSION_COOKIE)
-    yield login
-    browser.quit()
