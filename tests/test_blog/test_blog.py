@@ -1,5 +1,4 @@
 import pytest
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 from api.api_helpers import delete_all_posts
