@@ -1,14 +1,14 @@
 import random
 
 import pytest
-from selenium.webdriver import Chrome
 
-from constants import Links
+from constants import Links, VALID_BROWSERS
 
 
 @pytest.fixture()
-def browser():
-    browser = Chrome()
+def browser(request):
+    launch = request.config.getoption("--launch")
+    browser = VALID_BROWSERS[launch]()
     browser.maximize_window()
     yield browser
     browser.quit()
@@ -33,8 +33,13 @@ def pytest_configure(config):
     )
 
 
-def pytest_addoption(parser, browser):
-    parser.addoption("--env", default="prod")
+def pytest_addoption(parser):
+    parser.addoption(
+        "--env", default="prod"
+    )
+    parser.addoption(
+        "--launch", default="chrome", choices=["chrome", "opera"]
+    )
 
 
 @pytest.fixture(scope='session', autouse=True)

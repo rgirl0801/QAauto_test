@@ -1,11 +1,11 @@
 import pytest
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
+from api.api_help import delete_all_posts
 
-from api.api_helpers import delete_all_posts
 from api.blog_api import BlogApi
 from constants import Links
-from functions import wait_until_clickable, wait_until_visible, element_is_present
+from pages.blog_pages.main_page import MainPage
+from pages.blog_pages.post_modify_page import PostModifyPage
+from pages.blog_pages.post_page import PostPage
 
 
 @pytest.fixture()
@@ -15,59 +15,69 @@ def delete_user_posts(url):
 
 
 @pytest.fixture()
-def generate_post(url, faker):
-    title_post = faker.text(10)
-    text_post = faker.text(30)
-    tags_post = faker.text(5)
+def create_post_for_test(url, faker):
     api = BlogApi(url)
-    api.create_post(title=title_post, text=text_post, tags=tags_post)
-    return title_post, text_post
+    title = faker.text(10)
+    text = faker.text(100)
+    api.create_post(title=title, text=text, tags=[faker.text(5)])
+    return title, text
 
 
 @pytest.mark.usefixtures("delete_user_posts")
 class TestsBlogOpen:
-    def test_open_post(self, browser, url, generate_post):
-        browser.get(url + Links.blog)
-        text_title, text_post = generate_post
-        wait_until_clickable(browser,
-                             (By.XPATH, f'//h1[text()="{text_title}"]')).click()
-        text_find = wait_until_visible(browser, (By.CSS_SELECTOR, ".container p+p"))
+    @pytest.fixture(autouse=True)
+    def setup(self, browser, url):
+        self.blog_page = MainPage(browser, url + Links.blog)
+        self.post_page = PostPage(browser, url + Links.blog)
 
-        assert text_post == text_find.text, "Неверный приветственный текст"
+    def test_open_post(self, create_post_for_test):
+        title, text = create_post_for_test
+
+        self.blog_page.open_page()
+        self.blog_page.click_on_post_title(title)
+        self.post_page.check_post_text(text)
 
 
 @pytest.mark.usefixtures("delete_user_posts")
 class TestsBlogModify:
+    @pytest.fixture(autouse=True)
+    def setup(self, browser, url):
+        self.blog_page = MainPage(browser, url + Links.blog)
+        self.post_modify_page = PostModifyPage(browser, url + Links.blog)
+
     def test_create_post(self, browser, url, faker):
-        browser.get(url + Links.blog)
-        wait_until_clickable(browser, (By.ID, "new")).click()
         title = faker.text(10)
-        wait_until_clickable(browser, (By.ID, "title")).send_keys(title)
-        wait_until_clickable(browser, (By.ID, "text")).send_keys(faker.text(100))
-        wait_until_clickable(browser, (By.ID, "tags")).send_keys(faker.text(5))
-        wait_until_clickable(browser, (By.ID, "submit")).click()
 
-        assert "Blog posted successfully!" in wait_until_visible(browser, (By.ID, "alert_div")).text, \
-            "Не отобразилось сообщение об успехе"
-        assert wait_until_visible(browser, (By.TAG_NAME, "h1")).text == title, "Пост не опубликовался"
+        self.blog_page.open_page()
+        self.blog_page.click_create_post_button()
 
-    def test_edit_post(self, browser, url, generate_post):
-        browser.get(url + Links.blog)
-        text_title = generate_post[0]
-        cut_text_title = generate_post[0][:-1]
-        wait_until_clickable(browser,
-                             (By.XPATH, f'//h1[text()="{text_title}"]')).click()
-        wait_until_clickable(browser, (By.ID, 'edit')).click()
-        wait_until_clickable(browser, (By.CLASS_NAME, 'form-control')).send_keys(Keys.BACKSPACE)
-        wait_until_clickable(browser, (By.ID, 'submit')).click()
-        assert wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{cut_text_title}"]')).text == cut_text_title
+        self.post_modify_page.add_title(title)
+        self.post_modify_page.add_text(faker.text(100))
+        self.post_modify_page.add_tags(faker.text(5))
+        self.post_modify_page.click_submit_button()
 
-    def test_delete_post(self, browser, url, generate_post):
-        browser.get(url + Links.blog)
-        text_title = generate_post[0]
-        delete_text = '×\nYour post was successfully deleted'
-        wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{text_title}"]')).click()
-        wait_until_clickable(browser, (By.ID, 'delete')).click()
-        wait_until_clickable(browser, (By.ID, 'confirmedDelete')).click()
-        assert wait_until_clickable(browser, (By.XPATH, '//*[@id="alert_div"]')).text == delete_text
-        assert not element_is_present(browser, (By.XPATH, f'//h1[text()="{text_title}"]'))
+        self.blog_page.check_post_created_successfully_message()
+        self.blog_page.check_post_exists(title)
+
+    # def test_edit_post(self, browser, url, generate_post):
+    #     # self.blog_page.open_page()
+    #
+    #     browser.get(url + Links.blog)
+    #     text_title = generate_post[0]
+    #     cut_text_title = generate_post[0][:-1]
+    #     wait_until_clickable(browser,
+    #                          (By.XPATH, f'//h1[text()="{text_title}"]')).click()
+    #     wait_until_clickable(browser, (By.ID, 'edit')).click()
+    #     wait_until_clickable(browser, (By.CLASS_NAME, 'form-control')).send_keys(Keys.BACKSPACE)
+    #     wait_until_clickable(browser, (By.ID, 'submit')).click()
+    #     assert wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{cut_text_title}"]')).text == cut_text_title
+
+    # def test_delete_post(self, browser, url, generate_post):
+    #     browser.get(url + Links.blog)
+    #     text_title = generate_post[0]
+    #     delete_text = '×\nYour post was successfully deleted'
+    #     wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{text_title}"]')).click()
+    #     wait_until_clickable(browser, (By.ID, 'delete')).click()
+    #     wait_until_clickable(browser, (By.ID, 'confirmedDelete')).click()
+    #     assert wait_until_clickable(browser, (By.XPATH, '//*[@id="alert_div"]')).text == delete_text
+    #     assert not element_is_present(browser, (By.XPATH, f'//h1[text()="{text_title}"]'))
