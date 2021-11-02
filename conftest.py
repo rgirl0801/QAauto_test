@@ -33,7 +33,7 @@ def pytest_configure(config):
     )
 
 
-def pytest_addoption(parser, browser):
+def pytest_addoption(parser):
     parser.addoption("--env", default="prod")
 
 
