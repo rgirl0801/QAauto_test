@@ -27,7 +27,7 @@ def generate_post(url, faker):
 class TestsBlogOpen:
     def test_open_post(self, browser, url, generate_post):
         browser.get(url + Links.blog)
-        text_title, text_post = generate_post
+        post_title, text_post = generate_post
         wait_until_clickable(browser,
                              (By.XPATH, f'//h1[text()="{text_title}"]')).click()
         text_find = wait_until_visible(browser, (By.CSS_SELECTOR, ".container p+p"))
