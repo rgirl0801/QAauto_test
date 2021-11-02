@@ -53,8 +53,8 @@ class TestsBlogModify:
 
     def test_edit_post(self, browser, url, generate_post):
         browser.get(url + Links.blog)
-        text_title = generate_post[0]
-        cut_text_title = generate_post[0][:-1]
+        post_title = generate_post[0]
+        cut_text_title =  post_title[:-1]
         wait_until_clickable(browser,
                              (By.XPATH, f'//h1[text()="{text_title}"]')).click()
         wait_until_clickable(browser, (By.ID, 'edit')).click()
