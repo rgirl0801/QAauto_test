@@ -1,6 +1,6 @@
 import pytest
-from api.api_help import delete_all_posts
 
+from api.api_help import delete_all_posts
 from api.blog_api import BlogApi
 from constants import Links
 from pages.blog_pages.main_page import MainPage
@@ -23,12 +23,12 @@ def create_post_for_test(url, faker):
     return title, text
 
 
-@pytest.mark.usefixtures("delete_user_posts")
+@pytest.mark.usefixtures("delete_user_posts", "login")
 class TestsBlogOpen:
     @pytest.fixture(autouse=True)
     def setup(self, browser, url):
         self.blog_page = MainPage(browser, url + Links.blog)
-        self.post_page = PostPage(browser, url + Links.blog)
+        self.post_page = PostPage(browser, url)
 
     def test_open_post(self, create_post_for_test):
         title, text = create_post_for_test
@@ -43,7 +43,8 @@ class TestsBlogModify:
     @pytest.fixture(autouse=True)
     def setup(self, browser, url):
         self.blog_page = MainPage(browser, url + Links.blog)
-        self.post_modify_page = PostModifyPage(browser, url + Links.blog)
+        self.post_modify_page = PostModifyPage(browser, url)
+        self.post_page = PostPage(browser, url)
 
     def test_create_post(self, browser, url, faker):
         title = faker.text(10)
@@ -59,25 +60,23 @@ class TestsBlogModify:
         self.blog_page.check_post_created_successfully_message()
         self.blog_page.check_post_exists(title)
 
-    # def test_edit_post(self, browser, url, generate_post):
-    #     # self.blog_page.open_page()
-    #
-    #     browser.get(url + Links.blog)
-    #     text_title = generate_post[0]
-    #     cut_text_title = generate_post[0][:-1]
-    #     wait_until_clickable(browser,
-    #                          (By.XPATH, f'//h1[text()="{text_title}"]')).click()
-    #     wait_until_clickable(browser, (By.ID, 'edit')).click()
-    #     wait_until_clickable(browser, (By.CLASS_NAME, 'form-control')).send_keys(Keys.BACKSPACE)
-    #     wait_until_clickable(browser, (By.ID, 'submit')).click()
-    #     assert wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{cut_text_title}"]')).text == cut_text_title
+    def test_edit_post(self, browser, url, create_post_for_test):
+        self.blog_page.open_page()
+        title, text = create_post_for_test
+        self.blog_page.click_on_post_title(title)
 
-    # def test_delete_post(self, browser, url, generate_post):
-    #     browser.get(url + Links.blog)
-    #     text_title = generate_post[0]
-    #     delete_text = '×\nYour post was successfully deleted'
-    #     wait_until_clickable(browser, (By.XPATH, f'//h1[text()="{text_title}"]')).click()
-    #     wait_until_clickable(browser, (By.ID, 'delete')).click()
-    #     wait_until_clickable(browser, (By.ID, 'confirmedDelete')).click()
-    #     assert wait_until_clickable(browser, (By.XPATH, '//*[@id="alert_div"]')).text == delete_text
-    #     assert not element_is_present(browser, (By.XPATH, f'//h1[text()="{text_title}"]'))
+        self.post_page.click_edit_button()
+        self.post_page.edit_form_title()
+        self.post_page.click_submit_button()
+
+        self.post_page.check_title_is_changed(title[:-1])
+
+    def test_delete_post(self, browser, url, create_post_for_test):
+        self.blog_page.open_page()
+        title, text = create_post_for_test
+        self.blog_page.click_on_post_title(title)
+
+        self.post_page.click_delete_button()
+        self.post_page.click_confirm_delete_button()
+
+        self.blog_page.check_post_is_deleted(title)

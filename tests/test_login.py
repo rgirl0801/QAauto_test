@@ -1,26 +1,36 @@
 import pytest
 
 from constants import Links, POSITIVE_LOGIN_CREDENTIALS, NEGATIVE_LOGIN_CREDENTIALS
-from functions import wait_for_url_to_be, login_ui
+from pages.auth_page import AuthPage
+from pages.blog_pages.main_page import MainPage
 
 
 @pytest.mark.auth
 class TestAuthorizationClass:
+    @pytest.fixture(autouse=True)
+    def setup(self, browser, url):
+        self.auth_page = AuthPage(browser, url + Links.login)
+        self.auth_page.open_page()
+        self.blog_page = MainPage(browser, url + Links.blog)
 
-    @pytest.mark.smoke
     def test_login_positive(self, browser, url):
-        browser.get(url + Links.login)  # step1
-        browser.maximize_window()
-        login_ui(browser, POSITIVE_LOGIN_CREDENTIALS['email'], POSITIVE_LOGIN_CREDENTIALS['password'])
-        wait_for_url_to_be(browser, url + Links.profile)  # step5
-        assert browser.get_cookie("session"), 'Отсуствует куки session'  # step6
+        self.auth_page.login_ui(POSITIVE_LOGIN_CREDENTIALS['email'], POSITIVE_LOGIN_CREDENTIALS['password'])
+        assert self.auth_page.page_is_open(url + Links.profile)
+        self.auth_page.check_user_authorization()
 
     @pytest.mark.parametrize("email, password",
                              NEGATIVE_LOGIN_CREDENTIALS, ids=["empty email", "empty password", "invalid email",
                                                               "unregistered user"])
     @pytest.mark.search
-    def test_login_negative(self, email, password, browser, url):
-        browser.get(url + Links.login)  # step1
-        browser.maximize_window()
-        login_ui(browser, email, password)  # step2
-        assert wait_for_url_to_be(browser, url + Links.login), 'Произошла авторизация'  # step4
+    def test_login_negative(self, email, password, url):
+        self.auth_page.login_ui(email, password)
+        assert self.auth_page.page_is_open(url + Links.login)
+
+    @pytest.mark.usefixtures("login")
+    def test_logout(self):
+        self.blog_page.open_page()
+
+        self.auth_page.logout()
+
+        self.blog_page.open_page()
+        self.blog_page.check_impossibility_creating_post()

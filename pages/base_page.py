@@ -2,14 +2,19 @@ from typing import Tuple
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebElement
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
 
 # класс с общими хэлперами и методами для работы с элементами, которые расположены на каждой странице
+
+
 class BasePage:
-    def __init__(self, browser: Chrome, url):
+    LOGUOT_BUTTON = (By.CSS_SELECTOR, "[href = '/logout']")
+
+    def __init__(self, browser: Chrome, url) -> object:
         self.browser = browser
         self.url = url
 
@@ -44,6 +49,16 @@ class BasePage:
         """Убеждаемся, что элемент присутствует на странице"""
         try:
             self.wait_until_visible(locator, timeout)
+            return True
+        except TimeoutException:
+            return False
+
+    def logout(self):
+        self.wait_until_clickable(self.LOGUOT_BUTTON).click()
+
+    def page_is_open(self, url):
+        try:
+            self.wait_for_url_to_be(url)
             return True
         except TimeoutException:
             return False

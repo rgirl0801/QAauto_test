@@ -1,29 +1,23 @@
-import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
-from constants import Links
 from pages.base_page import BasePage
-# класс для работы со страницей авторизации (/login)
-from pages.blog_pages.main_page import MainPage
-from pages.blog_pages.post_modify_page import PostModifyPage
 
+
+# класс для работы со страницей авторизации (/login)
 
 class AuthPage(BasePage):
-    EMAIL_FIELD = 'email'
-    PASSWORD_FIELD = 'password'
-    BUTTON = 'button'
+    EMAIL_FIELD = (By.NAME, 'email')
+    PASSWORD_FIELD = (By.NAME, 'password')
+    BUTTON = (By.CLASS_NAME, 'button')
+
+    # CHECKBOX = [type = "checkbox"]
 
     def login_ui(self, email: str, password: str) -> None:
         """Функция логина на стенде через UI"""
-        self.wait_until_clickable((By.NAME, self.EMAIL_FIELD)).send_keys(email)
-        self.wait_until_clickable((By.NAME, self.PASSWORD_FIELD)).send_keys(password)
-        self.wait_until_clickable((By.NAME, self.BUTTON)).click()
+        self.wait_until_clickable(self.EMAIL_FIELD).send_keys(email)
+        self.wait_until_clickable(self.PASSWORD_FIELD).send_keys(password)
+        self.wait_until_clickable(self.BUTTON).click()
 
-    @pytest.fixture(autouse=True)
-    def setup(self, browser, url):
-        self.blog_page = MainPage(browser, url + Links.blog)
-        self.post_modify_page = PostModifyPage(browser, url + Links.blog)
-
-
-class AuthPageLocators(BasePage):
-    ...
+    def check_user_authorization(self):
+        assert self.browser.get_cookie('session'), 'Отсуствует куки session'
