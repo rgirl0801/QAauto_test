@@ -7,7 +7,6 @@ from pages.base_page import BasePage
 class MainPage(BasePage):
     POST_TITLE = '//h1[text()="{}"]'
     CREATE_POST_BUTTON = (By.ID, "new")
-    CREATE_POST_SUCCESS_MESSAGE = (By.ID, "alert_div")
     FIRST_POST_TITLE = (By.TAG_NAME, "h1")
     NOTIFICATION = (By.ID, "alert_div")
 
@@ -19,7 +18,7 @@ class MainPage(BasePage):
 
     def check_post_created_successfully_message(self):
         assert "Blog posted successfully!" in self.wait_until_visible(
-            self.CREATE_POST_SUCCESS_MESSAGE).text, \
+            self.NOTIFICATION).text, \
             "Не отобразилось сообщение об успехе"
 
     def check_post_exists(self, title):
