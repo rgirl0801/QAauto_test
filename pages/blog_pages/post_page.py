@@ -1,4 +1,4 @@
-from selenium.webdriver import Keys
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from pages.base_page import BasePage
@@ -11,7 +11,6 @@ class PostPage(BasePage):
     DELETE_BUTTON = (By.ID, 'delete')
     CONFIRM_DELETE_BUTTON = (By.ID, 'confirmedDelete')
     TITLE = (By.TAG_NAME, 'h1')
-    EDIT_TITLE_FORM = (By.CLASS_NAME, 'form-control')
     SUBMIT_BUTTON = (By.ID, "submit")
 
     def check_post_text(self, text):
@@ -32,6 +31,3 @@ class PostPage(BasePage):
 
     def check_title_is_changed(self, new_title):
         assert self.wait_until_visible(self.TITLE).text == new_title
-
-    def edit_form_title(self):
-        self.wait_until_clickable(self.EDIT_TITLE_FORM).send_keys(Keys.BACKSPACE)
