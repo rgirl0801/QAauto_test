@@ -14,7 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 class BasePage:
     LOGOUT_BUTTON = (By.CSS_SELECTOR, "[href = '/logout']")
 
-    def __init__(self, browser: Chrome, url) -> object:
+    def __init__(self, browser: Chrome, url):
         self.browser = browser
         self.url = url
 
