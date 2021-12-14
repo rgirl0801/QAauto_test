@@ -12,7 +12,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class BasePage:
-    LOGUOT_BUTTON = (By.CSS_SELECTOR, "[href = '/logout']")
+    LOGOUT_BUTTON = (By.CSS_SELECTOR, "[href = '/logout']")
 
     def __init__(self, browser: Chrome, url) -> object:
         self.browser = browser
@@ -54,7 +54,7 @@ class BasePage:
             return False
 
     def logout(self):
-        self.wait_until_clickable(self.LOGUOT_BUTTON).click()
+        self.wait_until_clickable(self.LOGOUT_BUTTON).click()
 
     def page_is_open(self, url):
         try:
