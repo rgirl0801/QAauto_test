@@ -21,7 +21,7 @@ class TestAuthorizationClass:
     @pytest.mark.parametrize("email, password",
                              NEGATIVE_LOGIN_CREDENTIALS, ids=["empty email", "empty password", "invalid email",
                                                               "unregistered user"])
-    @pytest.mark.search
+
     def test_login_negative(self, email, password, url):
         self.auth_page.login_ui(email, password)
         assert self.auth_page.page_is_open(url + Links.login)
