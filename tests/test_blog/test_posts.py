@@ -1,6 +1,6 @@
 import pytest
 
-from api.api_help import delete_all_posts
+from api.api_helpers import delete_all_posts
 from api.blog_api import BlogApi
 from constants import Links
 from pages.blog_pages.main_page import MainPage
