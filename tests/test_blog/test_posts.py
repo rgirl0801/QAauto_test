@@ -66,7 +66,7 @@ class TestsBlogModify:
         self.blog_page.click_on_post_title(title)
 
         self.post_page.click_edit_button()
-        self.post_mofify_page.edit_title()
+        self.post_modify_page.edit_title()
         self.post_page.click_submit_button()
 
         self.post_page.check_title_is_changed(title[:-1])
