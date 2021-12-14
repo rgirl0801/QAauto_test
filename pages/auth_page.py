@@ -11,8 +11,6 @@ class AuthPage(BasePage):
     PASSWORD_FIELD = (By.NAME, 'password')
     BUTTON = (By.CLASS_NAME, 'button')
 
-    # CHECKBOX = [type = "checkbox"]
-
     def login_ui(self, email: str, password: str) -> None:
         """Функция логина на стенде через UI"""
         self.wait_until_clickable(self.EMAIL_FIELD).send_keys(email)
