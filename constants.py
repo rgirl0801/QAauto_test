@@ -1,3 +1,5 @@
+from selenium.webdriver import Opera, Chrome
+
 NEGATIVE_LOGIN_CREDENTIALS = [
     ("", "!QAZ2wsx"),
     ("qa_test@test.ru", ""),
@@ -5,6 +7,7 @@ NEGATIVE_LOGIN_CREDENTIALS = [
     ("test@test.ru", "1QAZ2wsx")
 ]
 
+# здесь должны быть креденшелзы, присланные преподавателем
 POSITIVE_LOGIN_CREDENTIALS = {"email": "api_user_11@test.ru",
                               "password": "q11w11e11"}
 
@@ -15,4 +18,9 @@ class Links:
     login = "login"
     profile = "profile"
     blog = "blog"
-    author = blog + "/author/2"
+
+
+VALID_BROWSERS = {
+   "chrome": Chrome,
+   "opera": Opera
+}
