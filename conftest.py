@@ -18,11 +18,13 @@ def login(browser, url):
 def browser(request):
     launch = request.config.getoption("--launch")
     if launch == 'remote':
-        browser = VALID_BROWSERS[launch](command_executor=COMMAND_EXECUTOR,
-                                         desired_capabilities=BROWSER_REMOTE_CAPABILITIES)
+        browser = VALID_BROWSERS["remote"](command_executor=COMMAND_EXECUTOR["local"],
+                                           desired_capabilities=BROWSER_REMOTE_CAPABILITIES)
+    elif launch == 'remote_ci':
+        browser = VALID_BROWSERS["remote"](command_executor=COMMAND_EXECUTOR["ci"])
     else:
         browser = VALID_BROWSERS[launch]()
-    browser.maximize_window()
+        browser.maximize_window()
     yield browser
     browser.quit()
 
@@ -47,8 +49,13 @@ def pytest_configure(config):
 
 
 def pytest_addoption(parser):
-    parser.addoption("--env", default="prod")
-    parser.addoption("--launch", default="chrome", choices=["chrome", "opera", "remote"])
+    parser.addoption(
+        "--env", default="prod"
+    )
+    parser.addoption(
+        "--launch", default="chrome",
+        choices=["chrome", "opera", "remote", "remote_ci"]
+    )
 
 
 @pytest.fixture(scope='session', autouse=True)

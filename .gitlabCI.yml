@@ -1,0 +1,12 @@
+stages:
+  - test
+  - report
+selenium-tests:
+  stage: test
+  image: python:3.8
+  services:
+    - name: selenoid/chrome
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - pytest -v --launch remote_ci

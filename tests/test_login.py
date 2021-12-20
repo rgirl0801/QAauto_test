@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from constants import Links, POSITIVE_LOGIN_CREDENTIALS, NEGATIVE_LOGIN_CREDENTIALS
@@ -13,6 +14,7 @@ class TestAuthorizationClass:
         self.auth_page.open_page()
         self.blog_page = MainPage(browser, url + Links.blog)
 
+    @allure.title("Проверяем авторизацию ")
     def test_login_positive(self, browser, url):
         self.auth_page.login_ui(POSITIVE_LOGIN_CREDENTIALS['email'], POSITIVE_LOGIN_CREDENTIALS['password'])
         assert self.auth_page.page_is_open(url + Links.profile)
